@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIHub Station</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .chat-container {
+            margin: 50px auto;
+            width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .messages {
+            margin: 20px 0;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .user {
+            color: #007bff;
+        }
+
+        .bot {
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h1>AI Hub Station Chatbot</h1>
+    <div class="messages" id="messages"></div>
+    <input type="text" id="userInput" placeholder="Ask something..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+    function sendMessage() {
+        const userInput = document.getElementById('userInput').value;
+        if (userInput.trim() === '') return;
+
+        // Add user message to the message container
+        const messageContainer = document.getElementById('messages');
+        const userMessage = document.createElement('div');
+        userMessage.className = 'message user';
+        userMessage.textContent = `You: ${userInput}`;
+        messageContainer.appendChild(userMessage);
+
+        // Clear the input
+        document.getElementById('userInput').value = '';
+
+        // Send the user message to the backend
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: userInput }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Add bot reply to the message container
+            const botMessage = document.createElement('div');
+            botMessage.className = 'message bot';
+            botMessage.textContent = `AI: ${data.reply}`;
+            messageContainer.appendChild(botMessage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+</body>
+</html>
